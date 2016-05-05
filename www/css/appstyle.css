@@ -1,0 +1,66 @@
+html
+{
+	width:100%;
+	height:100%;
+}
+
+html {
+	font-size: 62.5%;
+}
+
+body {
+	font-size: 1.5rem;
+	line-height: 1.6;
+	font-family: 'Open Sans';
+}
+
+p {
+	display: block;
+	margin-bottom: 15px;
+}
+
+.hg-header {
+	background-color: rgb(100, 100, 100);
+	color: #fff;
+	font-size: 2rem;
+	font-weight: 700;
+	font-style: italic;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+}
+
+.hg-footer {
+	background-color: rgb(100, 100, 100);
+	color: #fff;
+	font-size: 1.2rem;
+	font-style: italic;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.hg-left,
+.hg-right {
+	background-color: rgb(230, 230, 230);
+	text-align: center;
+}
+
+.hg-header,
+.hg-left,
+.hg-right{
+	padding: 15px;
+}
+
+.hg, .hg-main {
+	height:100%;
+	width: 100%;
+}
+
+h1,h2,h3,h4,h5,h6 {
+	text-align: center;
+}
+

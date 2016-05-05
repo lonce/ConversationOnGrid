@@ -1,0 +1,55 @@
+<!-- http://bitsofco.de/holy-grail-layout-css-grid/ -->
+<!-- http://igalia.github.io/css-grid-layout/enable.html -->
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+    	  <link rel="stylesheet" type="text/css" href="css/appstyle.css">
+        <link rel="stylesheet" type="text/css" href="css/holygrailstyle.css">
+        <link rel="stylesheet" type="text/css" href="css/contentstyle.css">
+        <title>sonic.sg</title>
+        <meta name="sonic.sg" content="about">
+        <script type="text/javascript" data-main="appscripts/main.js" src="jslibs/require.js">
+        </script>
+    </head>
+
+<body class="hg">  
+  <header class="hg-header">Conversation Dynamics</header>
+  <main class="hg-main">
+      <svg id="SimpleDiv">
+      </svg>
+  </main>
+  <aside class="hg-left">Agent 1<br>
+    <text class="label"> Alpha </text> 
+    <input id="alphaID[0]" type="range" step=".05" min="0" max="1" value=".5"><br>
+    
+    <text class="label"> Beta </text> 
+    <input id="betaID[0]" type="range" step=".05" min="0" max="1" value=".5"><br>
+
+    <text class="label"> Gamma </text> 
+    <input id="gammaID[0]" type="range" step=".05" min="0" max="1" value=".5"><br>
+
+    <text class="label"> Delta </text> 
+    <input id="deltaID[0]" type="range" step=".05" min="0" max="1" value=".5"><br>
+
+  </aside>
+  <aside class="hg-right">Agent 2<br>
+    <text class="label"> Alpha </text> 
+    <input id="alphaID[1]" type="range" step=".05" min="0" max="1" value=".5"><br>
+    
+    <text class="label"> Beta </text> 
+    <input id="betaID[1]" type="range" step=".05" min="0" max="1" value=".5"><br>
+
+    <text class="label"> Gamma </text> 
+    <input id="gammaID[1]" type="range" step=".05" min="0" max="1" value=".5"><br>
+
+    <text class="label"> Delta </text> 
+    <input id="deltaID[1]" type="range" step=".05" min="0" max="1" value=".5"><br>
+
+  </aside>
+  <footer class="hg-footer">Footer</footer>
+</body>  
+    
+</html>
+
