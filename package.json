@@ -1,0 +1,27 @@
+{
+  "name": "Conversation",
+  "version": "0.1.0",
+  "description": "Dynamical system model of turn-taking conversation ",
+  "main": "www/appscripts/main.js",
+  "dependencies": {
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lonce/AntScoreForSynth.git"
+  },
+  "keywords": [
+    "conversation",
+    "differential equation",
+    "diffeq"
+  ],
+  "author": "Lonce Wyse",
+  "license": "LGPL",
+  "bugs": {
+    "url": "https://github.com/lonce/AntScoreForSynth/issues"
+  },
+  "homepage": "https://github.com/lonce/ConversationOnGrid"
+}
