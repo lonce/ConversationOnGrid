@@ -10,9 +10,25 @@ require.config({
 	}
 });
 require(
-	["utils", "../jslibs/raphael-min", "makediffeq","../jslibs/numeric-1.2.6"],
+	["utils", "memwindow", "oneDdisplay", "../jslibs/raphael-min", "../jslibs/numeric-1.2.6"],
 
-	function (utils) {
+	function (utils, memwindow, oneDdisplay) {
+        // System parameters ----------
+        var numUnits=1; // the number of simultaneous sets of equations (diffEQs) being run and visualized
+        var g_stepSize=.10;
+        var g_trailLength=25;
+
+        //-----------------------------------------------------------
+        // The equations 
+        var diffEQ = function(t, x){ 
+            return [0 + alpha[0]*(x[0]+x[2])-beta[0]*x[1]*x[0] ,
+                    0-gamma[0]*x[1] + delta[0]*x[0]*x[1] ,
+                    0 + alpha[1]*(x[0]+x[2])-beta[1]*x[3]*x[2] ,
+                    0-gamma[1]*x[3] + delta[1]*x[2]*x[3]
+                    ];
+            }
+        console.log("diffEQ is " + diffEQ);
+        //-----------------------------------------------------------------
 
         var myrequestAnimationFrame = utils.getRequestAnimationFrameFunc();
 
@@ -28,15 +44,23 @@ require(
         prect.attr("fill", "#000"); //fill-opacity
         prect.toBack();
 
-
-        var numUnits=1;
-        var g_stepSize=.25;
-        var g_trailLength=25;
+        // paper for drawing value histories (memwindows)
+        convTracePaper=oneDdisplay("footerdiv")
         
+        // For drawing a trace of one variable over a recency window
+        mem1=memwindow();
+        mem1.historyIndex=(function(){idx=[]; for(var i=0;i<mem1.maxHistoryLength;i++)idx.push(Math.round(i*pWidth/mem1.maxHistoryLength)); return idx;})();
+ 
+        mem2=memwindow();      
+        mem2.historyIndex=(function(){idx=[]; for(var i=0;i<mem2.maxHistoryLength;i++)idx.push(Math.round(i*pWidth/mem2.maxHistoryLength)); return idx;})();
+
+
+        //-------------------------------------------
+        // just to keep track of things for drawing
         var unitGenerator=function(){
             var unit = {
                 "f": function(){},
-                "y": [],
+                "vals": [], // stores the values returned from the diffeq solver
                 // keep path history (pop old, and push new on each solving epoch)
                 "pathHistory": {"maxSegments": g_trailLength, 
                                 "seg":[],
@@ -65,17 +89,7 @@ require(
             return unit;
         }
 
-        //-----------------------------------------------------------
-        // The equations 
-        var diffEQ = function(t, x){ 
-            return [0 + alpha[0]*x[2]-beta[0]*x[1]*x[0] ,
-                    0-gamma[0]*x[1] + delta[0]*x[0]*x[1] ,
-                    0 + alpha[1]*x[0]-beta[1]*x[3]*x[2] ,
-                    0-gamma[1]*x[3] + delta[1]*x[2]*x[3]
-                    ];
-            }
-
-        //-----------------------------------------------------------------
+        //-----------------------------------------------------
         // Parameters from slider interfaces 
 
         // alpha
@@ -144,9 +158,7 @@ require(
         });
 
         //-----------------------------------------------------------------
-
-        console.log("diffEQ is " + diffEQ);
-
+        // initialize units
         var unit = [];
         for(var i=0;i<numUnits;i++){
             //unit[i] = unitGenerator([[0, -5, 10],[0, 28, -1, 0, 0, 0, -1],[0, 0, 0, -8/3, 0, 1]]);
@@ -166,7 +178,7 @@ require(
 
 
             for(var i=0;i<numUnits;i++){
-                unit[i].y = [[0+Math.random()*2],[0+Math.random()*2],[0+Math.random()*2], [0+Math.random()*2]];  // initial value   Isley Bros
+                unit[i].vals = [[0+Math.random()*2],[0+Math.random()*2],[0+Math.random()*2], [0+Math.random()*2]];  // initial value   Isley Bros
                 unit[i].drawing.color=utils.hslToRgb(Math.random(), .75, .75);
             }
 
@@ -177,20 +189,30 @@ require(
             (function tick(){
                 //console.log("pathHistoryase loc: " + y[0].last() + ", " + y[1].last() + ", " +  y[2].last());
                 for(var i=0;i<numUnits;i++){
-                    sol = numeric.dopri(t,t+step,[unit[i].y[0].last(),unit[i].y[1].last(), unit[i].y[2].last(), unit[i].y[3].last()], unit[i].f,1e-6,2000);
-                    unit[i].y = numeric.transpose(sol.y);
+                    sol = numeric.dopri(t,t+step,[unit[i].vals[0].last(),unit[i].vals[1].last(), unit[i].vals[2].last(), unit[i].vals[3].last()], unit[i].f,1e-6,2000);
+                    unit[i].vals = numeric.transpose(sol.y);
 
-                    //summaryVoice+=unit[i].y[0].last();
-                    //console.log("---------   (x,y) =  (" + unit[i].y[0].last() + ", " + unit[i].y[1].last() + ")");
+                    //summaryVoice+=unit[i].vals[0].last();
+                    //console.log("---------   (x,y) =  (" + unit[i].vals[0].last() + ", " + unit[i].vals[1].last() + ")");
 
-                    solX=unit[i].y[0].scale(100).translate(pWidth/3);
-                    solY=unit[i].y[2].scale(100).translate(pHeight/5);
+                    solX=unit[i].vals[0].scale(100).translate(pWidth/3);
+                    solY=unit[i].vals[2].scale(100).translate(pHeight/5);
 
+                    // plot one variable vs the other in phase space
                     pathString = utils.atopstring(solX,solY);
                     unit[i].pathHistory.newseg(paper.path(pathString).attr("stroke", unit[i].drawing.color));
                     unit[i].drawing.stateGraphic.attr("cx", solX.last());
                     unit[i].drawing.stateGraphic.attr("cy", solY.last());
                 }
+
+                // save the traces and visualize them on the one-D paper
+                // Note that this only uses SolX and SolY from uint[numUnits-1]
+                mem1.addHistory(solX.last());
+                mem2.addHistory(solY.last());
+                convTracePaper.clear();
+                convTracePaper.plot(mem1.historyIndex, mem1.history, "#0000FF");
+                convTracePaper.plot(mem2.historyIndex, mem2.history, "#00FF00");
+
 
                 t+=step;
                 myrequestAnimationFrame(tick);

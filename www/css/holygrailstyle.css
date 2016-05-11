@@ -4,7 +4,11 @@
 .hg-header { 
 	grid-area: header; 
 }
-.hg-footer { grid-area: footer; 
+.hg-footer-main { grid-area: footerMain; 
+}
+.hg-footer-left { grid-area: footerLeft; 
+}
+.hg-footer-right { grid-area: footerRight; 
 }
 .hg-main { grid-area: main;
 }
@@ -17,12 +21,15 @@
     display: grid;
     grid-template-areas: "header header header"
                          "navigation main ads"
-                         "footer footer footer";
+                         "footerLeft footerMain footerRight";
     grid-template-columns: 150px 1fr 150px;
     grid-template-rows: 15% 
                         1fr
-                        30px;
+                        20%;
     min-height: 100%;
+    margin: 0;
+    padding: 0;
+
 }
 
 @media screen and (max-width: 600px) {
@@ -31,7 +38,9 @@
                              "navigation"
                              "main"
                              "ads"
-                             "footer";
+                             "footerLeft"
+                             "footerMain"
+                             "footerRight";
         grid-template-columns: 100%;
         grid-template-rows: 100px 
                             50px 

@@ -72,7 +72,7 @@ define(
                 return s;
             }
 
-                        Array.prototype.scale = function (sc) {
+            Array.prototype.scale = function (sc) {
                 var newa=[];
                 for (var i = 0; i < this.length; i++) {
                     newa[i]=this[i]*sc;
