@@ -100,12 +100,19 @@ require(
         alphaSlider[1] = document.getElementById("alphaID[1]");
         alpha[0]=alpha_mid;
         alpha[1]=alpha_mid;
+        alphaSlider[0].value=.5; // since they are normalized in [0, 1]
+        document.getElementById("alphaValBox[0]").value = alpha[0];
+        alphaSlider[1].value=.5; // since they are normalized in [0, 1]
+        document.getElementById("alphaValBox[1]").value = alpha[1];
+
 
         alphaSlider[0].addEventListener("input", function(){
             alpha[0]=(alpha_mid-alpha_spread/2.0) + alphaSlider[0].value*(alpha_spread);
+            document.getElementById("alphaValBox[0]").value = alpha[0];
         });
         alphaSlider[1].addEventListener("input", function(){
             alpha[1]=(alpha_mid-alpha_spread/2.0) + alphaSlider[1].value*(alpha_spread);
+            document.getElementById("alphaValBox[1]").value = alpha[1];
         });
 
         // beta
@@ -116,12 +123,18 @@ require(
         betaSlider[1] = document.getElementById("betaID[1]");
         beta[0]=beta_mid;
         beta[1]=beta_mid;
+        betaSlider[0].value=.5; // since they are normalized in [0, 1]
+        document.getElementById("betaValBox[0]").value = beta[0];
+        betaSlider[1].value=.5; // since they are normalized in [0, 1]
+        document.getElementById("betaValBox[1]").value = beta[1];
 
         betaSlider[0].addEventListener("input", function(){
             beta[0]=(beta_mid-beta_spread/2.0) + betaSlider[0].value*(beta_spread);
+            document.getElementById("betaValBox[0]").value = beta[0];
         });
         betaSlider[1].addEventListener("input", function(){
             beta[1]=(beta_mid-beta_spread/2.0) + betaSlider[1].value*(beta_spread);
+            document.getElementById("betaValBox[1]").value = beta[1];
         });
 
 
@@ -133,12 +146,19 @@ require(
         gammaSlider[1] = document.getElementById("gammaID[1]");
         gamma[0]=gamma_mid;
         gamma[1]=gamma_mid;
+        gammaSlider[0].value=.5; // since they are normalized in [0, 1]
+        document.getElementById("gammaValBox[0]").value = gamma[0];
+        gammaSlider[1].value=.5; // since they are normalized in [0, 1]
+        document.getElementById("gammaValBox[1]").value = gamma[1];
+
 
         gammaSlider[0].addEventListener("input", function(){
             gamma[0]=(gamma_mid-gamma_spread/2.0) + gammaSlider[0].value*(gamma_spread);
+            document.getElementById("gammaValBox[0]").value = gamma[0];
         });
         gammaSlider[1].addEventListener("input", function(){
             gamma[1]=(gamma_mid-gamma_spread/2.0) + gammaSlider[1].value*(gamma_spread);
+            document.getElementById("gammaValBox[1]").value = gamma[1];
         });
 
         // delta
@@ -149,12 +169,19 @@ require(
         deltaSlider[1] = document.getElementById("deltaID[1]");
         delta[0]=delta_mid;
         delta[1]=delta_mid;
+        deltaSlider[0].value=.5; // since they are normalized in [0, 1]
+        document.getElementById("deltaValBox[0]").value = delta[0];
+        deltaSlider[1].value=.5; // since they are normalized in [0, 1]
+        document.getElementById("deltaValBox[1]").value = delta[1];
+
 
         deltaSlider[0].addEventListener("input", function(){
             delta[0]=(delta_mid-delta_spread/2.0) + deltaSlider[0].value*(delta_spread);
+            document.getElementById("deltaValBox[0]").value = delta[0];
         });
         deltaSlider[1].addEventListener("input", function(){
             delta[1]=(delta_mid-delta_spread/2.0) + deltaSlider[1].value*(delta_spread);
+            document.getElementById("deltaValBox[1]").value = delta[1];
         });
 
         //-----------------------------------------------------------------

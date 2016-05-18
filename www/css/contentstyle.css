@@ -11,6 +11,11 @@
 .label {
     font-size: 10px;
 }
+.valBox {
+	font-size: 10px;
+	width: 40px;
+	margin-left: 5px;
+}
 
 #footerdiv {
 	background-color: white;
