@@ -15,11 +15,13 @@ require(
 	function (utils, memwindow, oneDdisplay) {
         // System parameters ----------
         var numUnits=1; // the number of simultaneous sets of equations (diffEQs) being run and visualized
-        var g_stepSize=.10;
+        var g_stepSize=.20;
         var g_trailLength=25;
 
         //-----------------------------------------------------------
-        // The equations 
+        // The equations
+        //Talking at the same time
+        /*
         var diffEQ = function(t, x){ 
             return [0 + alpha[0]*(x[0]+x[2])-beta[0]*x[1]*x[0] ,
                     0-gamma[0]*x[1] + delta[0]*x[0]*x[1] ,
@@ -27,6 +29,16 @@ require(
                     0-gamma[1]*x[3] + delta[1]*x[2]*x[3]
                     ];
             }
+        */
+        var diffEQ = function(t, x){ 
+            return [
+                /*x[0]*/    alpha[0]*(x[0]*x[3])       - beta[0]*x[0]*x[1] ,
+                /*x[1]*/    -gamma[0]*(x[1]*x[3])      + delta[0]*x[0],
+                /*x[2]*/    alpha[1]*(x[2]*x[1])       - beta[1]*x[2]*x[3],
+                /*x[3]*/    -gamma[1]*(x[1]*x[3])      + delta[1]*x[2]
+                    ];
+            }
+
         console.log("diffEQ is " + diffEQ);
         //-----------------------------------------------------------------
 
@@ -100,9 +112,7 @@ require(
         alphaSlider[1] = document.getElementById("alphaID[1]");
         alpha[0]=alpha_mid;
         alpha[1]=alpha_mid;
-        alphaSlider[0].value=.5; // since they are normalized in [0, 1]
         document.getElementById("alphaValBox[0]").value = alpha[0];
-        alphaSlider[1].value=.5; // since they are normalized in [0, 1]
         document.getElementById("alphaValBox[1]").value = alpha[1];
 
 
@@ -116,16 +126,14 @@ require(
         });
 
         // beta
-        var beta_mid=1.3;
+        var beta_mid=1;
         var beta_spread=.6;
         var beta=[], betaSlider=[]; 
         betaSlider[0] = document.getElementById("betaID[0]");
         betaSlider[1] = document.getElementById("betaID[1]");
         beta[0]=beta_mid;
         beta[1]=beta_mid;
-        betaSlider[0].value=.5; // since they are normalized in [0, 1]
         document.getElementById("betaValBox[0]").value = beta[0];
-        betaSlider[1].value=.5; // since they are normalized in [0, 1]
         document.getElementById("betaValBox[1]").value = beta[1];
 
         betaSlider[0].addEventListener("input", function(){
@@ -146,9 +154,7 @@ require(
         gammaSlider[1] = document.getElementById("gammaID[1]");
         gamma[0]=gamma_mid;
         gamma[1]=gamma_mid;
-        gammaSlider[0].value=.5; // since they are normalized in [0, 1]
         document.getElementById("gammaValBox[0]").value = gamma[0];
-        gammaSlider[1].value=.5; // since they are normalized in [0, 1]
         document.getElementById("gammaValBox[1]").value = gamma[1];
 
 
@@ -169,9 +175,7 @@ require(
         deltaSlider[1] = document.getElementById("deltaID[1]");
         delta[0]=delta_mid;
         delta[1]=delta_mid;
-        deltaSlider[0].value=.5; // since they are normalized in [0, 1]
         document.getElementById("deltaValBox[0]").value = delta[0];
-        deltaSlider[1].value=.5; // since they are normalized in [0, 1]
         document.getElementById("deltaValBox[1]").value = delta[1];
 
 
@@ -222,8 +226,8 @@ require(
                     //summaryVoice+=unit[i].vals[0].last();
                     //console.log("---------   (x,y) =  (" + unit[i].vals[0].last() + ", " + unit[i].vals[1].last() + ")");
 
-                    solX=unit[i].vals[0].scale(100).translate(pWidth/3);
-                    solY=unit[i].vals[2].scale(100).translate(pHeight/5);
+                    solX=unit[i].vals[1].scale(100).translate(pWidth/3);
+                    solY=unit[i].vals[3].scale(100).translate(pHeight/5);
 
                     // plot one variable vs the other in phase space
                     pathString = utils.atopstring(solX,solY);
