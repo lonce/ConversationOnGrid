@@ -18,6 +18,17 @@ require(
         var g_stepSize=.20;
         var g_trailLength=25;
 
+        // Equation variable to display on the phase plane
+        var phasePlaneXVar=1;  
+        var phasePlaneYVar=3;
+
+        // displayScale and displayTranslate variable values to pixels
+        var displayScaleX = 150;
+        var displayScaleY = 150;
+        var displayTranslateX = 0; 
+        var displayTranslateY = 0; 
+        //----------------------------------------------------------
+        var numVars=4; // MUST be equal to number of EQs in diffEQ.
         //-----------------------------------------------------------
         // The equations
         //Talking at the same time
@@ -30,14 +41,31 @@ require(
                     ];
             }
         */
+
+        
         var diffEQ = function(t, x){ 
             return [
-                /*x[0]*/    alpha[0]*(x[0]*x[3])       - beta[0]*x[0]*x[1] ,
-                /*x[1]*/    -gamma[0]*(x[1]*x[3])      + delta[0]*x[0],
-                /*x[2]*/    alpha[1]*(x[2]*x[1])       - beta[1]*x[2]*x[3],
-                /*x[3]*/    -gamma[1]*(x[1]*x[3])      + delta[1]*x[2]
+                    alpha[0]*(x[0]*x[3])       - beta[0]*(x[0]*x[1]) , //x0
+                    -gamma[0]*(x[1]*x[3])      + delta[0]*x[0],      //x1
+                    alpha[1]*(x[2]*x[1])       - beta[1]*(x[2]*x[3]),  //x2
+                    -gamma[1]*(x[1]*x[3])      + delta[1]*x[2]       //x3
                     ];
             }
+        
+
+/*
+        var diffEQ = function(t, x){ 
+
+            return [
+                sinc*(alpha[0]*(x[0]*x[3])       - beta[0]*x[0]*x[1]) + (1-sinc)*(alpha[0]*(x[0]+x[2])-beta[0]*x[1]*x[0]) ,
+                sinc*(-gamma[0]*(x[1]*x[3])      + delta[0]*x[0])     + (1-sinc)*(-gamma[0]*x[1] + delta[0]*x[0]*x[1]) ,
+                sinc*(alpha[1]*(x[2]*x[1])       - beta[1]*x[2]*x[3]) + (1-sinc)*(alpha[1]*(x[0]+x[2])-beta[1]*x[3]*x[2]) ,
+                sinc*(-gamma[1]*(x[1]*x[3])      + delta[1]*x[2])     + (1-sinc)*(-gamma[1]*x[3] + delta[1]*x[2]*x[3]) 
+                    ];
+            }
+*/
+
+
 
         console.log("diffEQ is " + diffEQ);
         //-----------------------------------------------------------------
@@ -85,12 +113,10 @@ require(
                                 }
                                },
                 "drawing":{
-                    "shift": 0,
-                    "scale": 0,
                     "color": "#fff",
                     "stateGraphic": null,
-                    "makeStateGrahic": function(x,y,size){
-                        this.stateGraphic = paper.circle(pWidth/2, pHeight/2, 3);
+                    "makeStateGrahic": function(size){
+                        this.stateGraphic = paper.circle(-100, -100, 3); // initially off screen
                         this.stateGraphic.attr("fill", this.color);
                         this.stateGraphic.attr("stroke", this.color);
                         this.stateGraphic.toFront();
@@ -103,6 +129,13 @@ require(
 
         //-----------------------------------------------------
         // Parameters from slider interfaces 
+
+        var sincSlider = document.getElementById("SynchronyID");
+        var sinc = sincSlider.value;
+        sincSlider.addEventListener("input", function(ev){
+            sinc=ev.target.value;
+            console.log ("setting sinc to  " + sinc);
+        });
 
         // alpha
         var alpha_mid=1;
@@ -188,6 +221,28 @@ require(
             document.getElementById("deltaValBox[1]").value = delta[1];
         });
 
+        // ----------------------------------------
+        var valTextBox=[];
+        valTextBox[0]=document.getElementById("x0BoxID");
+        valTextBox[1]=document.getElementById("x1BoxID");
+        valTextBox[2]=document.getElementById("x2BoxID");
+        valTextBox[3]=document.getElementById("x3BoxID");
+
+        // -----------------------------------------
+        // Sets a new "initial value" in the two dimensions being displayed on the phase plane
+        svgElmt.addEventListener("click", function(ev){
+            console.log("mouse click at phase plane pt " + ev.offsetX/displayScaleX + ", " + ev.offsetY/displayScaleY)
+            var len=unit[0].vals[phasePlaneXVar].length-1;
+            
+            // reset all variable to something reasonable 
+            for(var j=0;j<numVars;j++){
+                unit[0].vals[j][len] = Math.random()*2;
+            }
+            // now reset vars displayed in phase plane to mouse click position
+            unit[0].vals[phasePlaneXVar][len] = ev.offsetX/displayScaleX;
+            unit[0].vals[phasePlaneYVar][len] = ev.offsetY/displayScaleY;
+        });
+
         //-----------------------------------------------------------------
         // initialize units
         var unit = [];
@@ -195,7 +250,7 @@ require(
             //unit[i] = unitGenerator([[0, -5, 10],[0, 28, -1, 0, 0, 0, -1],[0, 0, 0, -8/3, 0, 1]]);
             unit[i]= unitGenerator();
             unit[i].f = diffEQ;  // for now they will all use the same function - if we change the diffEQ funciton, all units will see it without having to reset unit.f
-            unit[i].drawing.makeStateGrahic(pWidth/2, pHeight/2, 5);
+            unit[i].drawing.makeStateGrahic(5);
         }
 
         solvestepper=function(){
@@ -221,13 +276,17 @@ require(
                 //console.log("pathHistoryase loc: " + y[0].last() + ", " + y[1].last() + ", " +  y[2].last());
                 for(var i=0;i<numUnits;i++){
                     sol = numeric.dopri(t,t+step,[unit[i].vals[0].last(),unit[i].vals[1].last(), unit[i].vals[2].last(), unit[i].vals[3].last()], unit[i].f,1e-6,2000);
+                    // matrix transpose because each y[n] is of length numvars, and we want each var in its own array
                     unit[i].vals = numeric.transpose(sol.y);
+
+                    for(var j=0;j<numVars;j++)
+                        valTextBox[j].value=unit[i].vals[j].last();
 
                     //summaryVoice+=unit[i].vals[0].last();
                     //console.log("---------   (x,y) =  (" + unit[i].vals[0].last() + ", " + unit[i].vals[1].last() + ")");
 
-                    solX=unit[i].vals[1].scale(100).translate(pWidth/3);
-                    solY=unit[i].vals[3].scale(100).translate(pHeight/5);
+                    solX=unit[i].vals[phasePlaneXVar].scale(displayScaleX).translate(displayTranslateX);
+                    solY=unit[i].vals[phasePlaneYVar].scale(displayScaleY).translate(displayTranslateY);
 
                     // plot one variable vs the other in phase space
                     pathString = utils.atopstring(solX,solY);
